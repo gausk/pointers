@@ -1,5 +1,5 @@
-use std::cell::UnsafeCell;
 use crate::cell::Cell;
+use std::cell::UnsafeCell;
 
 #[derive(Debug, Copy, Clone)]
 pub enum RefState {
@@ -13,6 +13,7 @@ pub enum RefState {
 /// a process whereby one can claim temporary, exclusive, mutable access to the inner value.
 /// Borrows for RefCell<T>s are tracked at runtime, unlike Rust’s native reference types
 /// which are entirely tracked statically, at compile time.
+/// RefCell is not thread safe as it does not implement Sync
 pub struct RefCell<T> {
     value: UnsafeCell<T>,
     state: Cell<RefState>,
@@ -28,9 +29,7 @@ impl<T> RefCell<T> {
 
     pub fn borrow(&self) -> Option<Ref<'_, T>> {
         match self.state.get() {
-            RefState::Exclusive => {
-                None
-            }
+            RefState::Exclusive => None,
             RefState::Shared(ref_count) => {
                 // SAFETY: No exclusive reference given before.
                 self.state.set(RefState::Shared(ref_count + 1));
@@ -41,7 +40,6 @@ impl<T> RefCell<T> {
                 self.state.set(RefState::Shared(1));
                 Some(Ref { cell: &self })
             }
-
         }
     }
 
@@ -51,7 +49,7 @@ impl<T> RefCell<T> {
             RefState::Unshared => {
                 // SAFETY: No other references given as state unshared
                 self.state.set(RefState::Exclusive);
-                Some(RefMut { cell: &self})
+                Some(RefMut { cell: &self })
             }
         }
     }
@@ -105,7 +103,6 @@ impl<T> std::ops::DerefMut for RefMut<'_, T> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -134,4 +131,3 @@ mod tests {
         assert_eq!(*c.borrow().unwrap(), 2);
     }
 }
-
