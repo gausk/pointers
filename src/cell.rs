@@ -39,7 +39,7 @@ impl<T> Cell<T> {
 /// Implied by UnsafeCell as variable impl<T> !Sync for Cell<T> {}
 /// ```compile_fail
 ///  use std::sync::Arc;
-///  let cell1 = Arc::new(Cell::new(0));
+///  let cell1 = Arc::new(pointers::cell::Cell::new(0));
 ///  std::thread::spawn(|| { cell1.set(1); });
 /// ```
 struct ThreadUnsafeTest {}
