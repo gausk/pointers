@@ -20,36 +20,36 @@ pub struct RefCell<T> {
 }
 
 impl<T> RefCell<T> {
-    pub fn new(value: T) -> RefCell<T> {
+    fn new(value: T) -> RefCell<T> {
         Self {
             value: UnsafeCell::new(value),
             state: Cell::new(RefState::Unshared),
         }
     }
 
-    pub fn borrow(&self) -> Option<Ref<'_, T>> {
+    fn borrow(&self) -> Option<Ref<'_, T>> {
         match self.state.get() {
             RefState::Exclusive => None,
             RefState::Shared(ref_count) => {
                 // SAFETY: No exclusive reference given before.
                 self.state.set(RefState::Shared(ref_count + 1));
-                Some(Ref { cell: &self })
+                Some(Ref { cell: self })
             }
             RefState::Unshared => {
                 // SAFETY: No reference given before.
                 self.state.set(RefState::Shared(1));
-                Some(Ref { cell: &self })
+                Some(Ref { cell: self })
             }
         }
     }
 
-    pub fn borrow_mut(&self) -> Option<RefMut<'_, T>> {
+    fn borrow_mut(&self) -> Option<RefMut<'_, T>> {
         match self.state.get() {
             RefState::Exclusive | RefState::Shared(_) => None,
             RefState::Unshared => {
                 // SAFETY: No other references given as state unshared
                 self.state.set(RefState::Exclusive);
-                Some(RefMut { cell: &self })
+                Some(RefMut { cell: self })
             }
         }
     }
@@ -63,7 +63,7 @@ impl<'a, T> Drop for Ref<'a, T> {
     fn drop(&mut self) {
         match self.cell.state.get() {
             RefState::Exclusive | RefState::Unshared => unreachable!(),
-            RefState::Shared(ref_count) if ref_count == 1 => {
+            RefState::Shared(1) => {
                 self.cell.state.set(RefState::Unshared);
             }
             RefState::Shared(ref_count) => {

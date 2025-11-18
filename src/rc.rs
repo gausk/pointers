@@ -57,7 +57,7 @@ impl<T> Drop for Rc<T> {
         inner.owner_count.set(c);
 
         if c == 0 {
-            drop(inner);
+            let _ = inner;
             // take ownership and drop RcInner + T
             drop(unsafe { Box::from_raw(self.inner.as_ptr()) });
         }

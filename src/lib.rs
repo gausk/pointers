@@ -1,3 +1,5 @@
+#![allow(unused)]
+mod arc;
 pub mod cell;
 mod mutex;
 mod rc;

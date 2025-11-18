@@ -32,10 +32,10 @@ impl<T> Cell<T> {
 }
 
 /// 1. Getting a raw *mut T from an &T does NOT remove Rust’s aliasing guarantees — the compiler still assumes the
-/// data behind &T is immutable, so mutating it through a raw pointer is undefined behavior.
+///    data behind &T is immutable, so mutating it through a raw pointer is undefined behavior.
 /// 2. UnsafeCell<T> is the only type that tells the compiler the data may be mutated through shared references,
-/// preventing misoptimizations. All interior-mutability types must use it.
-
+///    preventing misoptimizations. All interior-mutability types must use it.
+///
 /// Implied by UnsafeCell as variable impl<T> !Sync for Cell<T> {}
 /// ```compile_fail
 ///  use std::sync::Arc;
