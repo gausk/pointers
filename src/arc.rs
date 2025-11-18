@@ -77,7 +77,7 @@ mod tests {
         for _ in 0..10 {
             let current = five.clone();
             handles.push(thread::spawn(move || {
-                println!("{current:?}");
+                println!("{}", *current);
             }));
         }
 

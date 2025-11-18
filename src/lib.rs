@@ -1,5 +1,6 @@
 #![allow(unused)]
 mod arc;
+mod async_mutex;
 pub mod cell;
 mod mutex;
 mod rc;
@@ -29,9 +30,3 @@ Allows mutable or immutable borrows even through &T, with borrow rules enforced 
 ## Works for Complex / Non-Copy Types:
 Supports borrowing references into the inner value (e.g., RefMut), enabling mutation of complex data structures like Vec<T>, HashMap, etc.
 */
-
-/*
-
-Arc,
-AsyncMutex
- */

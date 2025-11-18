@@ -67,7 +67,6 @@ mod tests {
 
     #[test]
     fn test_mutex() {
-        let mutex = Mutex::new(0);
         let mutex = Arc::new(Mutex::new(0));
         let c_mutex = Arc::clone(&mutex);
 
