@@ -27,6 +27,7 @@ impl<T> Mutex<T> {
             .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
             .is_err()
         {
+            // stf::Mutex uses futex internally using libc
             spin_loop();
         }
         MutexGuard { mutex: self }
