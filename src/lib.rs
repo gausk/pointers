@@ -2,6 +2,7 @@ pub mod cell;
 mod mutex;
 mod rc;
 mod refcell;
+mod rwlock;
 /*
 # Rc
 ## Multiple Ownership:
@@ -30,7 +31,5 @@ Supports borrowing references into the inner value (e.g., RefMut), enabling muta
 /*
 
 Arc,
-Mutex,
-RwLock,
 AsyncMutex
  */

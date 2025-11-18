@@ -74,7 +74,7 @@ mod tests {
         let x = Arc::new(Cell::new(0));
         let x1 = Arc::clone(&x);
         let jh1 = thread::spawn(move || {
-            for _ in 0..100000 {
+            for _ in 0..1000000 {
                 let val = x1.get();
                 x1.set(val + 1);
             }
@@ -82,13 +82,13 @@ mod tests {
 
         let x2 = Arc::clone(&x);
         let jh2 = thread::spawn(move || {
-            for _ in 0..100000 {
+            for _ in 0..1000000 {
                 let val = x2.get();
                 x2.set(val + 1);
             }
         });
         jh1.join().unwrap();
         jh2.join().unwrap();
-        assert!(x.get() < 200000)
+        assert!(x.get() < 2000000)
     }
 }
