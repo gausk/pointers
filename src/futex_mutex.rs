@@ -53,7 +53,8 @@ impl<'a, T> DerefMut for FutexMutexGuard<'a, T> {
 
 impl<T> Drop for FutexMutexGuard<'_, T> {
     fn drop(&mut self) {
-        self.mutex.locked.store(false, Ordering::Release);
+        self.mutex.futex.value.store(0, Ordering::Release);
+        self.mutex.futex.wake(1);
     }
 }
 
@@ -62,10 +63,11 @@ mod tests {
     use super::FutexMutex;
     use std::sync::Arc;
     use std::thread;
+    use std::time::Duration;
     use std::time::SystemTime;
 
     #[test]
-    fn test_mutex() {
+    fn test_futex_mutex() {
         let mutex = Arc::new(FutexMutex::new(0));
         let c_mutex = Arc::clone(&mutex);
 
@@ -88,6 +90,7 @@ mod tests {
             handles.push(thread::spawn(move || {
                 for _ in 0..100 {
                     let mut guard = m.lock();
+                    thread::sleep(Duration::from_millis(1));
                     *guard += 1;
                 }
             }));
