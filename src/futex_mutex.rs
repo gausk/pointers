@@ -88,9 +88,8 @@ mod tests {
         for _ in 0..40 {
             let m = Arc::clone(&mutex);
             handles.push(thread::spawn(move || {
-                for _ in 0..100 {
+                for _ in 0..1000000 {
                     let mut guard = m.lock();
-                    thread::sleep(Duration::from_millis(1));
                     *guard += 1;
                 }
             }));
@@ -99,7 +98,7 @@ mod tests {
         for h in handles {
             h.join().unwrap();
         }
-        assert_eq!(*mutex.lock(), 4000);
+        assert_eq!(*mutex.lock(), 40000000);
         println!(
             "Time taken in my futex Mutex: {}ms",
             time.elapsed().unwrap().as_millis()
