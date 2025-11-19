@@ -2,6 +2,8 @@
 mod arc;
 mod async_mutex;
 pub mod cell;
+#[cfg(target_os = "linux")]
+mod futex_mutex;
 mod mutex;
 mod rc;
 mod refcell;

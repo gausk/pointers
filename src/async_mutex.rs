@@ -51,7 +51,8 @@ mod tests {
     use super::AsyncMutex;
     use crate::arc::Arc;
     use std::thread;
-    use std::time::SystemTime;
+    use std::thread::sleep;
+    use std::time::{Duration, SystemTime};
 
     #[tokio::test]
     async fn test_async_mutex() {
@@ -75,8 +76,9 @@ mod tests {
         for _ in 0..40 {
             let m = mutex.clone();
             handles.push(tokio::spawn(async move {
-                for _ in 0..100000 {
+                for _ in 0..100 {
                     let mut guard = m.lock().await.unwrap();
+                    tokio::time::sleep(Duration::from_millis(5)).await;
                     *guard += 1;
                 }
             }));
@@ -85,7 +87,7 @@ mod tests {
         for h in handles {
             h.await.unwrap();
         }
-        assert_eq!(*mutex.lock().await.unwrap(), 4000000);
+        assert_eq!(*mutex.lock().await.unwrap(), 4000);
         println!(
             "Time taken in my async Mutex: {}ms",
             time.elapsed().unwrap().as_millis()
@@ -102,8 +104,9 @@ mod tests {
         for _ in 0..40 {
             let m = mutex.clone();
             handles.push(tokio::spawn(async move {
-                for _ in 0..100000 {
+                for _ in 0..100 {
                     let mut guard = m.lock().await;
+                    tokio::time::sleep(Duration::from_millis(5)).await;
                     *guard += 1;
                 }
             }));
@@ -112,7 +115,7 @@ mod tests {
         for h in handles {
             h.await.unwrap();
         }
-        assert_eq!(*mutex.lock().await, 4000000);
+        assert_eq!(*mutex.lock().await, 4000);
         println!(
             "Time taken in async std Mutex: {}ms",
             time.elapsed().unwrap().as_millis()

@@ -4,4 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-tokio = { version = "1.48.0", features = ["macros", "sync", "rt-multi-thread"] }
+tokio = { version = "1.48.0", features = ["macros", "sync", "rt-multi-thread", "time"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+linux-futex = "1.0"
